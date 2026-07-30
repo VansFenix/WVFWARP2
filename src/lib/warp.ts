@@ -353,6 +353,42 @@ export const DNS_PRESETS = [
     hint: "семейный фильтр",
     dns: ["1.1.1.3", "1.0.0.3", "2606:4700:4700::1113", "2606:4700:4700::1003"],
   },
+  {
+    id: "quad9",
+    label: "Quad9",
+    hint: "блокировка вредоносных доменов",
+    dns: ["9.9.9.9", "149.112.112.112", "2620:fe::fe", "2620:fe::9"],
+  },
+  {
+    id: "malw",
+    label: "Malware",
+    hint: "AdGuard — антивирусная фильтрация",
+    dns: ["94.140.14.14", "94.140.15.15", "2a10:50c0::ad1:ff", "2a10:50c0::ad2:ff"],
+  },
+  {
+    id: "xbox",
+    label: "Xbox",
+    hint: "Microsoft — игровой",
+    dns: ["4.2.2.1", "4.2.2.2", "8.8.8.8"],
+  },
+  {
+    id: "astracat",
+    label: "AstraCAT",
+    hint: "российский DNS",
+    dns: ["77.221.128.134", "77.221.128.135"],
+  },
+  {
+    id: "mafioznik",
+    label: "Mafioznik",
+    hint: "dns.mafioznik.xyz",
+    dns: ["185.250.151.125", "178.217.188.124"],
+  },
+  {
+    id: "geohide",
+    label: "GeoHide",
+    hint: "обход geo-блокировок",
+    dns: ["188.246.246.1", "79.137.10.115"],
+  },
   { id: "none", label: "Без DNS", hint: "не прописывать", dns: [] as string[] },
 ] as const;
 
