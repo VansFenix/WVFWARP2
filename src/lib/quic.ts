@@ -238,13 +238,10 @@ export async function generateI1Line(domain: string): Promise<string> {
   globalThis.crypto.getRandomValues(dcid);
   const scid = new Uint8Array(0);
   const token = new Uint8Array(0);
-  const pkn = new Uint8Array(new ArrayBuffer(1));
-  pkn[0] = 0;
+  const pkn = new Uint8Array([0]);
   const clientHello = quicTlsClientHelloSniOnly(sni);
   const [payload, cutSettings] = quicTlsClientHelloToFrames(clientHello, level);
   const packet = await quicInitial(dcid, scid, token, pkn, payload, 0);
   quicFixCutSettings(cutSettings, packet.byteLength, pkn.byteLength, payload.byteLength);
-  const firstChunk = packet.slice(0, cutSettings[0]);
-  const secondChunk = packet.slice(cutSettings[0]);
-  return `I1 = **${quicToHex(firstChunk)} ** **${quicToHex(secondChunk)} **`;
+  return `I1 = <b 0x${quicToHex(packet)}>`;
 }
