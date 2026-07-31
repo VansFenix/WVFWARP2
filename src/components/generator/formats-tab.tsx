@@ -4,23 +4,35 @@ import { CONFIG_FORMATS } from '@/config/formats';
 
 export function FormatsTab() {
   return (
-    <div className="bg-[var(--surface)] rounded-[var(--radius-lg)] p-5 border border-[var(--border)]">
-      <h2 className="text-[16px] font-semibold text-[var(--text)] mb-4">Поддерживаемые форматы</h2>
-      <div className="space-y-2">
-        {CONFIG_FORMATS.map((f) => (
-          <div key={f.id} className="flex items-center justify-between px-4 py-3 bg-[var(--surface-2)] rounded-[var(--radius-md)]">
-            <div>
-              <span className="text-[14px] font-medium text-[var(--text)]">{f.name}</span>
-              <span className="text-[12px] text-[var(--text-dim)] ml-2">.{f.extension}</span>
+    <section className="generator-card overflow-hidden">
+      <div className="generator-card-head px-5 py-5 sm:px-7">
+        <div className="eyebrow inline-flex">Экспорт конфигураций</div>
+        <h2 className="mt-4 text-[25px] font-bold tracking-[-.04em] text-[var(--text)]">Поддерживаемые форматы</h2>
+        <p className="mt-2 max-w-[560px] text-[13px] leading-relaxed text-[var(--text-dim)]">
+          Один генератор — разные клиенты. Выбери формат, который подходит твоему устройству.
+        </p>
+      </div>
+      <div className="grid gap-3 p-5 sm:grid-cols-3 sm:p-7">
+        {CONFIG_FORMATS.map((format, index) => (
+          <div key={format.id} className="feature-card min-h-[165px] flex-col items-start justify-between">
+            <div className="flex w-full items-center justify-between">
+              <span className="text-[11px] font-bold tracking-[.16em] text-[var(--accent)]">0{index + 1}</span>
+              <span className={`rounded-full px-2 py-1 text-[10px] font-semibold ${
+                format.supportsQR
+                  ? 'bg-[var(--success-soft)] text-[var(--success)]'
+                  : 'bg-[var(--surface-3)] text-[var(--text-dim)]'
+              }`}>
+                {format.supportsQR ? 'QR доступен' : 'Файл'}
+              </span>
             </div>
-            <span className={`text-[12px] px-2 py-0.5 rounded ${
-              f.supportsQR ? 'text-[var(--success)] bg-[var(--success-soft)]' : 'text-[var(--text-dim)] bg-[var(--surface-3)]'
-            }`}>
-              {f.supportsQR ? 'QR ✓' : '—'}
-            </span>
+            <div>
+              <h3 className="text-[15px] font-semibold text-[var(--text)]">{format.name}</h3>
+              <p className="mt-2 text-[11px] leading-relaxed text-[var(--text-dim)]">{format.description}</p>
+              <span className="mt-3 inline-block text-[10px] text-[var(--text-faint)]">.{format.extension}</span>
+            </div>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

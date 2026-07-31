@@ -4,14 +4,12 @@ import { useState, useRef, useEffect } from 'react';
 import { CONFIG_FORMATS } from '@/config/formats';
 import { ENDPOINTS } from '@/config/endpoints';
 import { DNS_PROVIDERS } from '@/config/dns';
-import { FlagIcon } from '@/components/icons/flag-icon';
 import { Toggle } from './toggle';
 import type { ConfigFormat, DeviceType, SiteMode } from '@/types';
 
 interface DropdownOption {
   id: string;
   label: string;
-  flag?: string;
   disabled?: boolean;
 }
 
@@ -49,7 +47,6 @@ function Dropdown({ label, value, options, onChange }: DropdownProps) {
         <p className="text-[11px] text-[var(--text-dim)] font-light mb-0.5">{label}</p>
         <div className="flex items-center justify-between gap-2">
           <span className="text-[13px] font-medium text-[var(--text)] flex items-center gap-2 truncate">
-            {current?.flag && <FlagIcon code={current.flag} />}
             {current?.label || value}
           </span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -70,7 +67,6 @@ function Dropdown({ label, value, options, onChange }: DropdownProps) {
                   key={opt.id}
                   className="w-full text-left px-3.5 py-2 text-[13px] flex items-center gap-2 text-[var(--text-dim)] opacity-50 cursor-not-allowed"
                 >
-                  {opt.flag && <FlagIcon code={opt.flag} />}
                   {opt.label}
                 </div>
               );
@@ -85,7 +81,6 @@ function Dropdown({ label, value, options, onChange }: DropdownProps) {
                     : 'text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)]'
                 }`}
               >
-                {opt.flag && <FlagIcon code={opt.flag} />}
                 {opt.label}
               </button>
             );
@@ -146,7 +141,7 @@ export function ConfigSelectors({
         <Dropdown
           label="Конечная точка"
           value={endpointId}
-          options={ENDPOINTS.map((e) => ({ id: e.id, label: e.label, flag: e.flag }))}
+          options={ENDPOINTS.map((e) => ({ id: e.id, label: e.label }))}
           onChange={onEndpointChange}
         />
         <Dropdown

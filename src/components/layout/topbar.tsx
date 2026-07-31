@@ -13,31 +13,26 @@ interface TopbarProps {
 
 export function Topbar({ activeTab, onTabChange }: TopbarProps) {
   return (
-    <header className="flex items-center justify-between px-5 py-3 bg-[var(--surface)] rounded-[var(--radius-lg)] mb-4 border border-[var(--border)] flex-wrap gap-3">
+    <header className="topbar flex items-center justify-between gap-4">
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-[var(--radius-md)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-hover)] flex items-center justify-center shadow-lg shadow-[var(--accent-soft)]">
+        <div className="brand-mark">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999A5.5 5.5 0 104 15H3z" fill="white" />
+            <path d="M12 9v5m0 0l-2-2m2 2l2-2" stroke="var(--accent-hover)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-        <div>
-          <span className="text-[15px] font-bold tracking-tight bg-gradient-to-r from-[var(--accent)] to-[var(--accent-hover)] bg-clip-text text-transparent">
-            WVFWARP
-          </span>
-          <span className="text-[10px] text-[var(--text-dim)] ml-1.5 font-light">Generator</span>
+        <div className="brand-copy">
+          <span>WVF<span className="brand-accent">WARP</span></span>
+          <small>secure config studio</small>
         </div>
       </div>
 
-      <nav className="flex gap-1 bg-[var(--surface-2)] rounded-lg p-0.5">
+      <nav className="topnav" aria-label="Основная навигация">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
-            className={`px-3.5 py-1.5 rounded-md text-[13px] transition-all ${
-              activeTab === tab.id
-                ? 'bg-[var(--surface-3)] text-[var(--text)] font-medium shadow-sm'
-                : 'text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface)]'
-            }`}
+            className={`topnav-item ${activeTab === tab.id ? 'topnav-item-active' : ''}`}
           >
             {tab.label}
           </button>

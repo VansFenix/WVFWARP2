@@ -4,9 +4,7 @@ const BASE_URL = 'https://api.cloudflareclient.com/v0i1909051800';
 const DEFAULT_HEADERS = {
   'User-Agent': 'okhttp/3.12.1',
   'Content-Type': 'application/json',
-  'Accept-Encoding': 'identity',
 };
-const TIMEOUT_MS = 15000;
 
 export async function registerClient(
   publicKey: string,
@@ -24,7 +22,6 @@ export async function registerClient(
     method: 'POST',
     headers: DEFAULT_HEADERS,
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(TIMEOUT_MS),
   });
 
   if (!res.ok) throw new Error(`Registration failed: HTTP ${res.status}`);
@@ -46,7 +43,6 @@ export async function enableWarp(
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ warp_enabled: true }),
-    signal: AbortSignal.timeout(TIMEOUT_MS),
   });
 
   if (!res.ok) throw new Error(`Enable WARP failed: HTTP ${res.status}`);

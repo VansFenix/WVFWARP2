@@ -2,8 +2,6 @@ export interface EndpointOption {
   id: string;
   label: string;
   value: string;
-  externalUrl?: string;
-  flag?: string;
 }
 
 export const ENDPOINTS: EndpointOption[] = [
@@ -31,6 +29,6 @@ export function getEndpointValue(id: string, customValue?: string): string {
 }
 
 export function isExternalEndpoint(id: string): string | null {
-  const ep = ENDPOINTS.find((e) => e.id === id);
-  return ep?.externalUrl ?? null;
+  void id;
+  return null;
 }
