@@ -4,3 +4,9 @@ dist
 .vite
 *.err
 *.log
+
+.vercel
+.env*
+
+error.txt
+

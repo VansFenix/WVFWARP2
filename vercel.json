@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/api/reg/:path*", "destination": "/api/warp?__path=reg/:path*" }
+  ]
+}

@@ -96,6 +96,9 @@ const API_VER = "v0a2158";
 const API_BASE = `https://api.cloudflareclient.com/${API_VER}`;
 const REAL_PEER_KEY = "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=";
 
+/** Прокси Cloudflare Worker по умолчанию — используется, пока не задан свой */
+export const DEFAULT_WORKER_PROXY = "https://wvf-proxy.mol863046.workers.dev";
+
 const withProxy = (url: string): string[] => [
   url,
   `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
@@ -150,11 +153,10 @@ export async function registerDevice(
     const candidates: string[] = [];
     if (useProxy) {
       candidates.push(`${useProxy}${path}`);
-    } else {
-      const same = sameOriginProxy(path);
-      if (same) candidates.push(same);
-      candidates.push(...withProxy(`${API_BASE}${path}`));
     }
+    const same = sameOriginProxy(path);
+    if (same) candidates.push(same);
+    candidates.push(...withProxy(`${API_BASE}${path}`));
     let lastError: unknown = null;
     for (const url of candidates) {
       try {

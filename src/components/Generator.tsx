@@ -20,6 +20,7 @@ import {
 import { toast } from "./fx/toast";
 import {
   DNS_PRESETS,
+  DEFAULT_WORKER_PROXY,
   ENDPOINTS,
   MTU_OPTIONS,
   PORTS,
@@ -178,9 +179,9 @@ export default function Generator() {
   const [amnezia, setAmnezia] = useState<AmneziaOpts>(DEFAULT_AMNEZIA);
   const [customProxy, setCustomProxy] = useState(() => {
     try {
-      return localStorage.getItem("wvf:proxy") || "";
+      return localStorage.getItem("wvf:proxy") || DEFAULT_WORKER_PROXY;
     } catch {
-      return "";
+      return DEFAULT_WORKER_PROXY;
     }
   });
 
@@ -568,10 +569,11 @@ export default function Generator() {
                   </div>
                   <p className="mt-2 flex items-start gap-1.5 text-[10.5px] leading-relaxed text-faint/80">
                     <Sparkles className="mt-0.5 h-3 w-3 shrink-0 text-pulse2" />
-                    Запросы к API WARP по умолчанию идут через встроенный прокси сайта
-                    (<code className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px]">/api</code>),
-                    затем через публичные CORS-прокси. Можно указать свой Cloudflare Worker
-                    (<code className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px]">warp-worker.js</code>).
+                    По умолчанию запросы идут через Cloudflare Worker
+                    (<code className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px]">wvf-proxy</code>),
+                    затем через встроенный прокси сайта
+                    (<code className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px]">/api</code>)
+                    и публичные CORS-прокси.
                   </p>
                 </div>
               </StepCard>
