@@ -29,7 +29,7 @@ export function AboutTab() {
       </div>
 
       <div className="flex items-center gap-2 text-[12px] text-[var(--text-dim)]">
-        <span>MIT License · WVFWARP</span>
+        <span>WVFWARP</span>
       </div>
     </div>
   );

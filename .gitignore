@@ -29,3 +29,5 @@ next-env.d.ts
 
 # local
 error.txt
+
+.vercel
