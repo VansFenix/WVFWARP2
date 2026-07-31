@@ -29,6 +29,7 @@ import {
   keyFingerprint,
   registerDevice,
   resolveEndpoint,
+  randomConfigName,
   sanitizeName,
   sleep,
   type AmneziaOpts,
@@ -252,7 +253,8 @@ export default function Generator() {
       const ips =
         mode === "full" ? ["0.0.0.0/0", "::/0"] : activeCidrs;
       const dns = [...(DNS_PRESETS.find((d) => d.id === dnsId)?.dns ?? [])];
-      const name = sanitizeName(deviceName || "wvfwarp");
+      const cfgName = randomConfigName();
+      const name = deviceName.trim() ? sanitizeName(deviceName) : cfgName;
       const accountLabel = outcome.offline
         ? "Автономный (offline)"
         : outcome.plusApplied
@@ -277,7 +279,7 @@ export default function Generator() {
 
       setResult({
         config,
-        fileName: `${name}.conf`,
+        fileName: `${cfgName}.conf`,
         qrText: config,
         endpoint: ep,
         allowedCount: ips.length,
@@ -566,9 +568,10 @@ export default function Generator() {
                   </div>
                   <p className="mt-2 flex items-start gap-1.5 text-[10.5px] leading-relaxed text-faint/80">
                     <Sparkles className="mt-0.5 h-3 w-3 shrink-0 text-pulse2" />
-                    Cloudflare Worker проксирует запросы к API WARP. Без него используются
-                    публичные CORS-прокси — медленнее и менее надёжно.
-                    Скрипт: <code className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px]">warp-worker.js</code>
+                    Запросы к API WARP по умолчанию идут через встроенный прокси сайта
+                    (<code className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px]">/api</code>),
+                    затем через публичные CORS-прокси. Можно указать свой Cloudflare Worker
+                    (<code className="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[10px]">warp-worker.js</code>).
                   </p>
                 </div>
               </StepCard>

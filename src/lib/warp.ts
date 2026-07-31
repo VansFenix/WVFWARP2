@@ -102,30 +102,17 @@ const withProxy = (url: string): string[] => [
   `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
 ];
 
-async function fetchJson<T>(
-  url: string,
-  init: RequestInit,
-  timeoutMs = 12000,
-): Promise<T> {
-  const attempts = withProxy(url);
-  let lastError: unknown = null;
-  for (const attempt of attempts) {
-    try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), timeoutMs);
-      const res = await fetch(attempt, { ...init, signal: controller.signal });
-      clearTimeout(timer);
-      if (!res.ok) {
-        lastError = new Error(`HTTP ${res.status}`);
-        continue;
-      }
-      return (await res.json()) as T;
-    } catch (e) {
-      lastError = e;
-    }
+/**
+ * Встроенный серверный прокси сайта (Vercel Function `/api/warp.js`).
+ * Идёт первым в списке попыток — работает без CORS и не зависит от
+ * публичных CORS-прокси.
+ */
+const sameOriginProxy = (path: string): string | null => {
+  if (typeof location !== "undefined" && /^https?:\/\//.test(location.origin)) {
+    return `${location.origin}/api${path}`;
   }
-  throw lastError instanceof Error ? lastError : new Error("network error");
-}
+  return null;
+};
 
 export interface RegisterOutcome {
   reg: WarpRegistration;
@@ -160,19 +147,28 @@ export async function registerDevice(
     ?.replace(/\/reg(\/.*)?$/, "");
 
   const apiFetch = async <T>(path: string, init: RequestInit): Promise<T> => {
+    const candidates: string[] = [];
     if (useProxy) {
-      const url = `${useProxy}${path}`;
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 15000);
+      candidates.push(`${useProxy}${path}`);
+    } else {
+      const same = sameOriginProxy(path);
+      if (same) candidates.push(same);
+      candidates.push(...withProxy(`${API_BASE}${path}`));
+    }
+    let lastError: unknown = null;
+    for (const url of candidates) {
       try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 15000);
         const res = await fetch(url, { ...init, signal: controller.signal });
+        clearTimeout(timer);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return (await res.json()) as T;
-      } finally {
-        clearTimeout(timer);
+      } catch (e) {
+        lastError = e;
       }
     }
-    return fetchJson<T>(`${API_BASE}${path}`, init);
+    throw lastError instanceof Error ? lastError : new Error("network error");
   };
 
   let reg: WarpRegistration | null = null;
@@ -183,7 +179,7 @@ export async function registerDevice(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "CF-Client-Version": "a-6.3-2158",
+        "CF-Client-Version": "a-6.10-1914",
         "User-Agent": "okhttp/3.12.1",
       },
       body,
@@ -295,6 +291,10 @@ export const sanitizeName = (name: string): string => {
     .slice(0, 15);
   return clean || "wvfwarp";
 };
+
+/** Имя конфига в стиле официального клиента: WARP + 7 цифр */
+export const randomConfigName = (): string =>
+  `WARP${String(Math.floor(1000000 + Math.random() * 9000000))}`;
 
 export function downloadText(filename: string, text: string) {
   const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
