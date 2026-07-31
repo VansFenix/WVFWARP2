@@ -24,19 +24,6 @@ export interface WarpRegistration {
   };
 }
 
-export interface AmneziaOpts {
-  enabled: boolean;
-  jc: number;
-  jmin: number;
-  jmax: number;
-  s1: number;
-  s2: number;
-  h1: string;
-  h2: string;
-  h3: string;
-  h4: string;
-}
-
 export interface BuildOptions {
   privateKey: string;
   addressV4: string;
@@ -49,7 +36,6 @@ export interface BuildOptions {
   keepalive: number;
   deviceName: string;
   accountLabel: string;
-  amnezia: AmneziaOpts;
   offline: boolean;
 }
 
@@ -264,17 +250,6 @@ export function buildConfig(o: BuildOptions): string {
   lines.push(`Address = ${o.addressV6}/128`);
   if (o.dns.length) lines.push(`DNS = ${o.dns.join(", ")}`);
   lines.push(`MTU = ${o.mtu}`);
-  if (o.amnezia.enabled) {
-    lines.push(`Jc = ${o.amnezia.jc}`);
-    lines.push(`Jmin = ${o.amnezia.jmin}`);
-    lines.push(`Jmax = ${o.amnezia.jmax}`);
-    lines.push(`S1 = ${o.amnezia.s1}`);
-    lines.push(`S2 = ${o.amnezia.s2}`);
-    lines.push(`H1 = ${o.amnezia.h1}`);
-    lines.push(`H2 = ${o.amnezia.h2}`);
-    lines.push(`H3 = ${o.amnezia.h3}`);
-    lines.push(`H4 = ${o.amnezia.h4}`);
-  }
   lines.push(``);
   lines.push(`[Peer]`);
   lines.push(`PublicKey = ${o.peerPublicKey}`);

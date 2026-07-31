@@ -31,7 +31,7 @@ export default function App() {
         <DividerMarquee words={["tunnel", "encrypt", "route", "obfuscate"]} />
         <Features />
         <HowItWorks />
-        <DividerMarquee words={["warp", "amnezia", "freedom", "wvfwarp"]} reverse />
+        <DividerMarquee words={["warp", "privacy", "freedom", "wvfwarp"]} reverse />
         <Faq />
       </main>
       <Footer />

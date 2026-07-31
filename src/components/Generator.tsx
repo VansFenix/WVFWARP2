@@ -9,10 +9,9 @@ import {
   Ghost,
   Globe,
   KeyRound,
-  Layers,
   Loader2,
   Route,
-  ShieldHalf,
+  ShieldCheck,
   Sparkles,
   User,
   Zap,
@@ -33,7 +32,6 @@ import {
   randomConfigName,
   sanitizeName,
   sleep,
-  type AmneziaOpts,
   type GenerateResult,
 } from "../lib/warp";
 import { SERVICES, SERVICE_GLYPHS, collectCidrs } from "../lib/services";
@@ -41,21 +39,6 @@ import ResultPanel, { type LogEntry } from "./ResultPanel";
 import { Reveal, SectionHeader } from "./ui";
 
 export type GenState = "idle" | "working" | "done";
-
-const DEFAULT_AMNEZIA: AmneziaOpts = {
-  enabled: false,
-  jc: 4,
-  jmin: 40,
-  jmax: 70,
-  s1: 0,
-  s2: 0,
-  h1: "1",
-  h2: "2",
-  h3: "3",
-  h4: "4",
-};
-
-const randH = () => String(Math.floor(100_000_000 + Math.random() * 899_000_000));
 
 const DEVICE_NAMES = [
   "falcon-9",
@@ -82,7 +65,6 @@ interface Preset {
   mtu: number;
   keepalive: number;
   dnsId: string;
-  amnezia: AmneziaOpts;
 }
 
 const PRESETS: Preset[] = [
@@ -97,7 +79,6 @@ const PRESETS: Preset[] = [
     mtu: 1280,
     keepalive: 25,
     dnsId: "standard",
-    amnezia: { ...DEFAULT_AMNEZIA },
   },
   {
     id: "games",
@@ -110,12 +91,11 @@ const PRESETS: Preset[] = [
     mtu: 1280,
     keepalive: 25,
     dnsId: "standard",
-    amnezia: { ...DEFAULT_AMNEZIA },
   },
   {
     id: "stealth",
     name: "Максимальная тишина",
-    desc: "Весь трафик + обфускация AmneziaWG на порту 4500 для жёстких DPI",
+    desc: "Весь трафик через туннель на нестандартном порту 4500 для обхода блокировок",
     icon: "ghost",
     mode: "full",
     selected: [],
@@ -123,18 +103,6 @@ const PRESETS: Preset[] = [
     mtu: 1280,
     keepalive: 25,
     dnsId: "standard",
-    amnezia: {
-      enabled: true,
-      jc: 4,
-      jmin: 40,
-      jmax: 70,
-      s1: 0,
-      s2: 0,
-      h1: randH(),
-      h2: randH(),
-      h3: randH(),
-      h4: randH(),
-    },
   },
 ];
 
@@ -176,7 +144,6 @@ export default function Generator() {
   const [keepalive, setKeepalive] = useState<number>(25);
   const [deviceName, setDeviceName] = useState("");
   const [warpKey, setWarpKey] = useState("");
-  const [amnezia, setAmnezia] = useState<AmneziaOpts>(DEFAULT_AMNEZIA);
   const [customProxy, setCustomProxy] = useState(() => {
     try {
       return localStorage.getItem("wvf:proxy") || DEFAULT_WORKER_PROXY;
@@ -221,7 +188,6 @@ export default function Generator() {
     setMtu(p.mtu);
     setKeepalive(p.keepalive);
     setDnsId(p.dnsId);
-    setAmnezia(p.amnezia.enabled ? { ...p.amnezia, h1: randH(), h2: randH(), h3: randH(), h4: randH() } : p.amnezia);
     toast(`Пресет «${p.name}» применён`, "info");
   };
 
@@ -274,7 +240,6 @@ export default function Generator() {
         keepalive,
         deviceName: name,
         accountLabel,
-        amnezia,
         offline: outcome.offline,
       });
 
@@ -505,6 +470,10 @@ export default function Generator() {
                       </Pill>
                     ))}
                   </div>
+                  <p className="mt-2 text-[10.5px] leading-relaxed text-faint/70">
+                    Если соединение зависает — провайдер режет порт 2408:
+                    переключитесь на 500, 1701 или 4500 и заново сгенерируйте конфиг.
+                  </p>
                 </div>
 
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -580,97 +549,23 @@ export default function Generator() {
             </Reveal>
 
             <Reveal>
-              <StepCard num="04" title="Маскировка" hint="против DPI">
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <ModeButton
-                    active={!amnezia.enabled}
-                    onClick={() => setAmnezia({ ...amnezia, enabled: false })}
-                    icon={<ShieldHalf className="h-5 w-5" />}
-                    title="WireGuard"
-                    desc="Стандартный протокол"
-                  />
-                  <ModeButton
-                    active={amnezia.enabled}
-                    onClick={() => setAmnezia({ ...amnezia, enabled: true })}
-                    icon={<Layers className="h-5 w-5" />}
-                    title="AmneziaWG"
-                    desc="Обфускация заголовков"
-                  />
-                </div>
-
-                <motion.div
-                  initial={false}
-                  animate={{
-                    height: amnezia.enabled ? "auto" : 0,
-                    opacity: amnezia.enabled ? 1 : 0,
-                  }}
-                  transition={{ duration: 0.4 }}
-                  className="overflow-hidden"
-                >
-                  <div className="mt-4 rounded-2xl border border-pulse/20 bg-pulse/[0.04] p-4">
-                    <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
-                      {(
-                        [
-                          ["jc", "Jc"],
-                          ["jmin", "Jmin"],
-                          ["jmax", "Jmax"],
-                          ["s1", "S1"],
-                          ["s2", "S2"],
-                        ] as const
-                      ).map(([key, label]) => (
-                        <label key={key} className="block">
-                          <span className="mb-1 block font-mono text-[10px] text-pulse2">
-                            {label}
-                          </span>
-                          <input
-                            type="number"
-                            value={amnezia[key]}
-                            min={0}
-                            max={65535}
-                            onChange={(e) =>
-                              setAmnezia({
-                                ...amnezia,
-                                [key]: Math.max(
-                                  0,
-                                  Math.min(65535, parseInt(e.target.value) || 0),
-                                ),
-                              })
-                            }
-                            className="w-full rounded-lg border border-linebright/40 bg-void/70 px-2.5 py-2 font-mono text-xs text-snow outline-none focus:border-pulse/60"
-                          />
-                        </label>
-                      ))}
-                    </div>
-                    <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                      {(["h1", "h2", "h3", "h4"] as const).map((key) => (
-                        <label key={key} className="block">
-                          <span className="mb-1 block font-mono text-[10px] uppercase text-pulse2">
-                            {key.replace("h", "H")}
-                          </span>
-                          <input
-                            value={amnezia[key]}
-                            onChange={(e) =>
-                              setAmnezia({
-                                ...amnezia,
-                                [key]: e.target.value.replace(/[^0-9]/g, "").slice(0, 10),
-                              })
-                            }
-                            className="w-full rounded-lg border border-linebright/40 bg-void/70 px-2.5 py-2 font-mono text-xs text-snow outline-none focus:border-pulse/60"
-                          />
-                        </label>
-                      ))}
-                    </div>
-                    <button
-                      onClick={() =>
-                        setAmnezia({ ...amnezia, h1: randH(), h2: randH(), h3: randH(), h4: randH() })
-                      }
-                      className="mt-3 inline-flex items-center gap-2 rounded-full border border-pulse/30 bg-pulse/10 px-3.5 py-1.5 text-[11px] font-semibold text-pulse2 transition-colors hover:bg-pulse/20"
-                    >
-                      <Dices className="h-3.5 w-3.5" />
-                      Случайные магические заголовки
-                    </button>
+              <StepCard num="04" title="Протокол" hint="WireGuard">
+                <div className="flex items-start gap-4 rounded-2xl border border-mint/20 bg-mint/[0.04] p-4">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-mint/30 bg-mint/10 text-mint">
+                    <ShieldCheck className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <p className="text-[13px] font-bold text-snow">
+                      Стандартный WireGuard — без маскировки
+                    </p>
+                    <p className="mt-1.5 text-[12px] leading-relaxed text-mist">
+                      Серверы Cloudflare WARP работают только на чистом WireGuard:
+                      AmneziaWG-обфускация (Jc, H1–H4) не поддерживается сервером,
+                      и соединение зависает навсегда. Для обхода блокировок меняйте
+                      UDP-порт (500, 1701, 4500) или endpoint — этого достаточно.
+                    </p>
                   </div>
-                </motion.div>
+                </div>
               </StepCard>
             </Reveal>
 

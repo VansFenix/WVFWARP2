@@ -194,7 +194,7 @@ export default function ResultPanel({
             <div className="flex flex-wrap justify-center gap-2">
               <GhostChip>curve25519</GhostChip>
               <GhostChip>wireguard</GhostChip>
-              <GhostChip>amneziawg</GhostChip>
+              <GhostChip>no-logs</GhostChip>
             </div>
           </motion.div>
         )}
