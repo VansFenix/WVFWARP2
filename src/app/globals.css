@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Indigo/Violet accent */
+    --accent: #818cf8;
+    --accent-hover: #6366f1;
+    --accent-soft: #818cf818;
+    --accent-fg: #ffffff;
+
+    /* Warm gray neutrals */
+    --gray-950: #0a0a0f;
+    --gray-900: #111118;
+    --gray-800: #1a1a24;
+    --gray-700: #252532;
+    --gray-600: #3a3a4a;
+    --gray-500: #52526a;
+    --gray-400: #71718a;
+    --gray-300: #a1a1ba;
+    --gray-200: #d4d4e0;
+    --gray-100: #e4e4ee;
+    --gray-50: #f4f4f8;
+
+    /* Semantic */
+    --success: #34d399;
+    --success-soft: #34d39915;
+    --error: #f87171;
+    --error-soft: #f8717115;
+    --info: #60a5fa;
+    --info-soft: #60a5fa15;
+    --warning: #fbbf24;
+    --warning-soft: #fbbf2415;
+
+    /* Mapped tokens */
+    --bg: var(--gray-950);
+    --surface: var(--gray-900);
+    --surface-2: var(--gray-800);
+    --surface-3: var(--gray-700);
+    --border: var(--gray-600);
+    --border-hover: var(--gray-500);
+    --text: var(--gray-50);
+    --text-muted: var(--gray-300);
+    --text-dim: var(--gray-400);
+    --text-faint: var(--gray-500);
+
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+
+    /* Radius */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gray-600);
+  border-radius: 3px;
+}
+
+/* Selection */
+::selection {
+  background: var(--accent);
+  color: white;
+}
+
+/* Animations */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-in { animation: fade-in 0.3s ease both; }

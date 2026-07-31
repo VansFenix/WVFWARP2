@@ -1,0 +1,6 @@
+{
+  "name": "Instagram",
+  "icon": "RiInstagramFill",
+  "iconLibrary": "ri",
+  "ips": "157.240.0.0/17, 69.171.0.0/16, 31.13.24.0/21, 31.13.15.0/24"
+}

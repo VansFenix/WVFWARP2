@@ -1,0 +1,6 @@
+{
+  "name": "Kinozal",
+  "icon": "KinozalIcon",
+  "iconLibrary": "custom",
+  "ips": "93.125.216.0/24, 195.129.192.0/24"
+}

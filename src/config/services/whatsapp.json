@@ -1,0 +1,6 @@
+{
+  "name": "WhatsApp",
+  "icon": "IoLogoWhatsapp",
+  "iconLibrary": "io",
+  "ips": "157.240.0.0/17, 69.171.0.0/16, 31.13.0.0/16, 103.4.96.0/24"
+}
